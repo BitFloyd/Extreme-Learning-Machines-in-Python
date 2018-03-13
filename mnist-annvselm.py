@@ -8,7 +8,7 @@ import numpy as np
 from scipy.special import expit
 import math
 import matplotlib.pyplot as plt
-import tqdm
+from tqdm import tqdm
 
 from sklearn.svm import SVC
 
