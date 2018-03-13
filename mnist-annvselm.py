@@ -7,7 +7,8 @@ from keras.models import Sequential
 import numpy as np
 from scipy.special import expit
 import math
-
+import matplotlib.pyplot as plt
+import tqdm
 
 from sklearn.svm import SVC
 
@@ -133,24 +134,9 @@ ann_predicts_test = model.predict_classes(images_test,verbose=0)
 ann_predicts_train = model.predict_classes(images_train,verbose=0)
 
 
-
-# Initialize ELM class
-
-elm = ELM(n_layers=1, n_units=[100000], input_dim=images_train.shape[1])
-
-train_elm_transform = elm.evaluate(images_train)
-test_elm_transform = elm.evaluate(images_test)
-
-# ELM SVM on data:
-elmlogreg = SVC()
-elmlogreg.fit(X=train_elm_transform,y=targets_train)
-
-elmlogreg_predicts_test = elmlogreg.predict(test_elm_transform)
-elmlogreg_predicts_train = elmlogreg.predict(train_elm_transform)
-
 print "##########################################"
-print "BASIC SVM Accuracy on TEST:",accuracy_score(targets_test,logreg_predicts_test)
-print "BASIC SVM Accuracy on TRAIN:",accuracy_score(targets_train,logreg_predicts_train)
+print "BASIC LOGISTIC REGRESSION Accuracy on TEST:",accuracy_score(targets_test,logreg_predicts_test)
+print "BASIC LOGISTIC REGRESSION Accuracy on TRAIN:",accuracy_score(targets_train,logreg_predicts_train)
 print "##########################################"
 
 print "##########################################"
@@ -158,8 +144,41 @@ print "ANN Accuracy on TEST:",accuracy_score(targets_test,ann_predicts_test)
 print "ANN Accuracy on TRAIN:",accuracy_score(targets_train,ann_predicts_train)
 print "##########################################"
 
-print "##########################################"
-print "ELM SVM Accuracy on TEST:",accuracy_score(targets_test,elmlogreg_predicts_test)
-print "ELM SVM on TRAIN:",accuracy_score(targets_train,elmlogreg_predicts_train)
-print "##########################################"
+
+# Initialize ELM class
+test_acc_list = []
+train_acc_list = []
+
+for i in tqdm(range (0,8)):
+
+    elm = ELM(n_layers=1, n_units=[10**i], input_dim=images_train.shape[1])
+
+    train_elm_transform = elm.evaluate(images_train)
+    test_elm_transform = elm.evaluate(images_test)
+
+    # ELM SVM on data:
+    elmlogreg = SVC()
+    elmlogreg.fit(X=train_elm_transform,y=targets_train)
+
+    elmlogreg_predicts_test = elmlogreg.predict(test_elm_transform)
+    elmlogreg_predicts_train = elmlogreg.predict(train_elm_transform)
+
+    print "##########################################"
+    print "ELM LOGISTIC REGRESSION Accuracy on TEST with " +str(10**i) +" units:",accuracy_score(targets_test,elmlogreg_predicts_test)
+    print "ELM LOGISTIC REGRESSION Accuracy on TRAIN with " +str(10**i) +" units:",accuracy_score(targets_train,elmlogreg_predicts_train)
+    print "##########################################"
+
+    test_acc_list.append(accuracy_score(targets_test,elmlogreg_predicts_test))
+    train_acc_list.append(accuracy_score(targets_train,elmlogreg_predicts_train))
+
+
+
+hfm, = plt.scatter(test_acc_list,range(0,7),label='test_set_accuracy')
+plt.plot(test_acc_list,range(0,7),':')
+plt.xlabel('log_n_units_base_10')
+hfmt, = plt.scatter(train_acc_list,range(0,7),label='train_set_accuracy')
+plt.plot(train_acc_list,range(0,7),':')
+plt.ylabel('accuracy_score')
+plt.legend(handles=[hfm,hfmt])
+plt.show()
 
