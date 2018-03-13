@@ -149,8 +149,8 @@ elmlogreg_predicts_test = elmlogreg.predict(test_elm_transform)
 elmlogreg_predicts_train = elmlogreg.predict(train_elm_transform)
 
 print "##########################################"
-print "BASIC LOGISTIC REGRESSION Accuracy on TEST:",accuracy_score(targets_test,logreg_predicts_test)
-print "BASIC LOGISTIC REGRESSION Accuracy on TRAIN:",accuracy_score(targets_train,logreg_predicts_train)
+print "BASIC SVM Accuracy on TEST:",accuracy_score(targets_test,logreg_predicts_test)
+print "BASIC SVM Accuracy on TRAIN:",accuracy_score(targets_train,logreg_predicts_train)
 print "##########################################"
 
 print "##########################################"
@@ -159,7 +159,7 @@ print "ANN Accuracy on TRAIN:",accuracy_score(targets_train,ann_predicts_train)
 print "##########################################"
 
 print "##########################################"
-print "ELM LOGISTIC REGRESSION Accuracy on TEST:",accuracy_score(targets_test,elmlogreg_predicts_test)
-print "ELM LOGISTIC REGRESSION Accuracy on TRAIN:",accuracy_score(targets_train,elmlogreg_predicts_train)
+print "ELM SVM Accuracy on TEST:",accuracy_score(targets_test,elmlogreg_predicts_test)
+print "ELM SVM on TRAIN:",accuracy_score(targets_train,elmlogreg_predicts_train)
 print "##########################################"
 
