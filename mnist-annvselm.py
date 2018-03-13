@@ -7,10 +7,9 @@ from keras.models import Sequential
 import numpy as np
 from scipy.special import expit
 import math
-import tqdm
 
-from sklearn.linear_model import LogisticRegression
 
+from sklearn.svm import SVC
 
 class LinearTransform:
 
@@ -31,6 +30,8 @@ class ELM:
     # n_units must be a list of hidden units in each layer
 
     # Choose the random activations used for your model by removing them from the list in ELM.rand_function
+
+    # Add more if required but the signature must be copied correctly.
 
     def __init__(self,n_layers=1,n_units=(2),input_dim=10):
 
@@ -110,13 +111,13 @@ images_train,images_test, targets_train,targets_test = train_test_split(images,t
 
 
 
-# Basic logistic regression on data:
-logreg = LogisticRegression(multi_class='multinomial',n_jobs=-1,solver= 'lbfgs')
+#SVM on un-transformed data:
+logreg = SVC()
 logreg.fit(X=images_train,y=targets_train)
 
 # Evaluate logreg accuracy on test
 logreg_predicts_test = logreg.predict(images_test)
-
+logreg_predicts_train = logreg.predict(images_train)
 
 #ANN creation
 
@@ -129,38 +130,36 @@ model.compile(optimizer='adam',loss='categorical_crossentropy',metrics=['accurac
 model.fit(images_train,to_categorical(targets_train),epochs=30,verbose=0)
 
 ann_predicts_test = model.predict_classes(images_test,verbose=0)
-
+ann_predicts_train = model.predict_classes(images_train,verbose=0)
 
 
 
 # Initialize ELM class
 
-elm = ELM(n_layers=1, n_units=[1000], input_dim=images_train.shape[1])
+elm = ELM(n_layers=1, n_units=[100000], input_dim=images_train.shape[1])
 
 train_elm_transform = elm.evaluate(images_train)
 test_elm_transform = elm.evaluate(images_test)
 
-# ELM logistic regression on data:
-elmlogreg = LogisticRegression(multi_class='multinomial',n_jobs=-1,solver= 'lbfgs')
+# ELM SVM on data:
+elmlogreg = SVC()
 elmlogreg.fit(X=train_elm_transform,y=targets_train)
-# Evaluate logreg accuracy on test
+
 elmlogreg_predicts_test = elmlogreg.predict(test_elm_transform)
-
-
-
-print "##########################################"
-print "\n","BASIC LOGISTIC REGRESSION Accuracy:",accuracy_score(targets_test,logreg_predicts_test)
-print "##########################################"
-
-
+elmlogreg_predicts_train = elmlogreg.predict(train_elm_transform)
 
 print "##########################################"
-print "\n","ANN Accuracy:",accuracy_score(targets_test,ann_predicts_test)
+print "BASIC LOGISTIC REGRESSION Accuracy on TEST:",accuracy_score(targets_test,logreg_predicts_test)
+print "BASIC LOGISTIC REGRESSION Accuracy on TRAIN:",accuracy_score(targets_train,logreg_predicts_train)
 print "##########################################"
 
-
+print "##########################################"
+print "ANN Accuracy on TEST:",accuracy_score(targets_test,ann_predicts_test)
+print "ANN Accuracy on TRAIN:",accuracy_score(targets_train,ann_predicts_train)
+print "##########################################"
 
 print "##########################################"
-print "\n","ELM LOGISTIC REGRESSION Accuracy:",accuracy_score(targets_test,elmlogreg_predicts_test)
+print "ELM LOGISTIC REGRESSION Accuracy on TEST:",accuracy_score(targets_test,elmlogreg_predicts_test)
+print "ELM LOGISTIC REGRESSION Accuracy on TRAIN:",accuracy_score(targets_train,elmlogreg_predicts_train)
 print "##########################################"
 
